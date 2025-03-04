@@ -1,0 +1,30 @@
+package users
+
+import "lichess-arena/internal/ui"
+
+templ login() {
+	@ui.Base() {
+		<div class="container">
+			<section class="section">
+				<h1 class="title">Login</h1>
+				<div class="column is-half-tablet">
+					<form action="/login" method="POST" novalidate>
+						@ui.TextInput(ui.TextInputOptions{
+							Icon: &ui.UserIcon,
+							Attrs: templ.Attributes{
+								"placeholder": "Username",
+								"name":        "name",
+							}})
+						@ui.PasswordTextInput(ui.TextInputOptions{
+							Icon: &ui.LockIcon,
+							Attrs: templ.Attributes{
+								"placeholder": "Password",
+								"name":        "password",
+							}})
+						<button type="submit" class="button">Login</button>
+					</form>
+				</div>
+			</section>
+		</div>
+	}
+}

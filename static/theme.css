@@ -10,3 +10,8 @@
 .navbar {
   border-bottom: 1px solid #111
 }
+
+.show-password {
+  pointer-events: all !important;
+  cursor: pointer;
+}

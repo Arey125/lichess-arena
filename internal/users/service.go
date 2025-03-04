@@ -18,4 +18,7 @@ func NewService(model UserModel) Service {
 
 func (s Service) Register(mux *http.ServeMux) {
 	mux.Handle("/", templ.Handler(home()))
+	mux.Handle("GET /login", templ.Handler(login()))
+	mux.Handle("GET /sign-up", templ.Handler(signUp()))
+	mux.HandleFunc("POST /sign-up", s.signUpPost)
 }

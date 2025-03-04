@@ -1,0 +1,88 @@
+package ui
+
+type TextInputOptions struct {
+	Label    string
+	Icon     *templ.Component
+	Attrs    templ.Attributes
+}
+
+func hasIcon(options []TextInputOptions) bool {
+	return len(options) > 0 && options[0].Icon != nil
+}
+
+func getIcon(options []TextInputOptions) templ.Component {
+	return *options[0].Icon
+}
+
+func getAttrs(options []TextInputOptions) templ.Attributes {
+	if len(options) == 0 {
+		return nil
+	}
+	return options[0].Attrs
+}
+
+func getLabel(options []TextInputOptions) string {
+	if len(options) == 0 {
+		return ""
+	}
+	return options[0].Label
+}
+
+func hasIconsLeft(options []TextInputOptions) templ.KeyValue[string, bool] {
+	return templ.KV("has-icons-left", hasIcon(options))
+}
+
+var hasIconsRight = templ.KV("has-icons-right", true)
+
+templ TextInput(options ...TextInputOptions) {
+	<div class="field">
+		if getLabel(options) != "" {
+			<label class="label">{ getLabel(options) }</label>
+		}
+		<div
+			class={ "control", hasIconsLeft(options)}
+		>
+			<input
+				class="input"
+				type="text"
+				{ getAttrs(options)... }
+			/>
+			if hasIcon(options) {
+				<span class="icon is-small is-left">
+					@getIcon(options)
+				</span>
+			}
+		</div>
+	</div>
+}
+
+templ PasswordTextInput(options ...TextInputOptions) {
+	<div class="field">
+		if getLabel(options) != "" {
+			<label class="label">{ getLabel(options) }</label>
+		}
+		<div
+			class={ "control", hasIconsLeft(options), hasIconsRight }
+			x-data="{show: false}"
+		>
+			<input
+				class="input"
+				:type="show ? 'text' : 'password'"
+				{ getAttrs(options)... }
+			/>
+			if hasIcon(options) {
+				<span class="icon is-small is-left">
+					@getIcon(options)
+				</span>
+			}
+			<span class="icon is-small is-right show-password" @click="show = !show">
+				<template x-if="!show">
+					@EyeIcon
+				</template>
+				<template x-if="show">
+					@EyeOffIcon
+				</template>
+			</span>
+		</div>
+	</div>
+}
