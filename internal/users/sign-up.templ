@@ -3,6 +3,7 @@ package users
 import (
 	"lichess-arena/internal/ui"
 	"net/http"
+	"fmt"
 )
 
 templ signUp() {
@@ -11,7 +12,7 @@ templ signUp() {
 			<section class="section">
 				<h1 class="title">Sign Up</h1>
 				<div class="column is-half-tablet">
-					<form action="/login" method="POST" novalidate x-data="{pass: '', repeatedPass: ''}">
+					<form action="/sign-up" method="POST" novalidate x-data="{pass: '', repeatedPass: ''}">
 						@ui.TextInput(ui.TextInputOptions{
 							Icon: &ui.UserIcon,
 							Attrs: templ.Attributes{
@@ -45,6 +46,7 @@ templ signUp() {
 }
 
 func (s Service) signUpPost(w http.ResponseWriter, r *http.Request) {
+    fmt.Printf("Sign up post\n")
 	name := r.FormValue("name")
 	password := r.FormValue("password")
 	repeated_password := r.FormValue("repeated_password")
@@ -54,7 +56,21 @@ func (s Service) signUpPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := s.model.Insert(name, password)
+    sess, err := s.sessionStore.Get(r, "test")
+	if err != nil {
+        fmt.Printf("Error getting session: %v\n", err)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+    sess.Values["test"] = "test"
+    err = sess.Save(r, w)
+	if err != nil {
+        fmt.Printf("Error getting session: %v\n", err)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	err = s.model.Insert(name, password)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return

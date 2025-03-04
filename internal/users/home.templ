@@ -1,11 +1,27 @@
 package users
 
-import "lichess-arena/internal/ui"
+import (
+	"context"
+	"lichess-arena/internal/ui"
+	"net/http"
+)
 
-templ home() {
+templ home(test string) {
 	@ui.Base() {
 		<div class="container">
-            <h1 class="title">Home</h1>
+			<h1 class="title">{test}</h1>
 		</div>
 	}
+}
+
+func (s Service) homePage(w http.ResponseWriter, r *http.Request) {
+    sess, err := s.sessionStore.Get(r, "test")
+    val := "Can't get session"
+    if err == nil {
+        sessVal, ok := sess.Values["test"].(string)
+        if ok {
+            val = sessVal
+        }
+    }
+	home(val).Render(context.Background(), w)
 }
