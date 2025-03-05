@@ -9,11 +9,12 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 
-	database "lichess-arena/internal/db"
-	"lichess-arena/internal/users"
-
 	"github.com/alexedwards/scs/sqlite3store"
 	"github.com/alexedwards/scs/v2"
+
+	database "lichess-arena/internal/db"
+	"lichess-arena/internal/log"
+	"lichess-arena/internal/users"
 )
 
 func main() {
@@ -32,7 +33,7 @@ func main() {
 
 	db := database.Connect(dsn)
 	sessionManager := scs.New()
-    sessionManager.Store = sqlite3store.New(db)
+	sessionManager.Store = sqlite3store.New(db)
 
 	mux := http.NewServeMux()
 	userModel := users.NewModel(db)
@@ -45,7 +46,7 @@ func main() {
 
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%d", port),
-		Handler:      sessionManager.LoadAndSave(mux),
+		Handler:      sessionManager.LoadAndSave(log.LogRequests(mux)),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,

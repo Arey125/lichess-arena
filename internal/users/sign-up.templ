@@ -3,7 +3,6 @@ package users
 import (
 	"lichess-arena/internal/ui"
 	"net/http"
-	"fmt"
 )
 
 templ signUp() {
@@ -37,7 +36,9 @@ templ signUp() {
 							type="submit"
 							class="button"
 							:disabled="pass.length < 8 || repeatedPass.length < 8 || pass != repeatedPass"
-						>Sign up</button>
+						>
+							Sign up
+						</button>
 					</form>
 				</div>
 			</section>
@@ -46,7 +47,6 @@ templ signUp() {
 }
 
 func (s Service) signUpPost(w http.ResponseWriter, r *http.Request) {
-    fmt.Printf("Sign up post\n")
 	name := r.FormValue("name")
 	password := r.FormValue("password")
 	repeated_password := r.FormValue("repeated_password")
@@ -56,7 +56,7 @@ func (s Service) signUpPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    s.session.Put(r.Context(), "test", "test string")
+	s.session.Put(r.Context(), "test", "test string")
 
 	err := s.model.Insert(name, password)
 	if err != nil {
