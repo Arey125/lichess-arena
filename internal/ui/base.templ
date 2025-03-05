@@ -1,10 +1,13 @@
 package ui
 
+var config = "{\"historyCacheSize\": 0 }"
+
 templ Base() {
 	<html>
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <meta name="htmx-config" content={config}>
 			<title>Lichess Arena</title>
 			<link rel="stylesheet" href="/static/bulma.min.css"/>
 			<link rel="stylesheet" href="/static/theme.css"/>

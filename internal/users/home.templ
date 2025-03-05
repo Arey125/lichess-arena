@@ -15,13 +15,6 @@ templ home(test string) {
 }
 
 func (s Service) homePage(w http.ResponseWriter, r *http.Request) {
-    sess, err := s.sessionStore.Get(r, "test")
-    val := "Can't get session"
-    if err == nil {
-        sessVal, ok := sess.Values["test"].(string)
-        if ok {
-            val = sessVal
-        }
-    }
-	home(val).Render(context.Background(), w)
+    test := s.session.GetString(r.Context(), "test")
+	home(test).Render(context.Background(), w)
 }

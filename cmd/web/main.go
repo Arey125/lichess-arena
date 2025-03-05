@@ -12,7 +12,8 @@ import (
 	database "lichess-arena/internal/db"
 	"lichess-arena/internal/users"
 
-	"github.com/gorilla/sessions"
+	"github.com/alexedwards/scs/sqlite3store"
+	"github.com/alexedwards/scs/v2"
 )
 
 func main() {
@@ -29,13 +30,9 @@ func main() {
 		panic("PORT environment variable is not set")
 	}
 
-    storageSecret := os.Getenv("STORAGE_SECRET")
-    if storageSecret == "" {
-        panic("STORAGE_SECRET environment variable is not set")
-    }
-
 	db := database.Connect(dsn)
-    sessionStore := sessions.NewCookieStore([]byte(storageSecret))
+	sessionManager := scs.New()
+    sessionManager.Store = sqlite3store.New(db)
 
 	mux := http.NewServeMux()
 	userModel := users.NewModel(db)
@@ -43,12 +40,12 @@ func main() {
 	staticFileServer := http.FileServer(http.Dir("./static"))
 	mux.Handle("GET /static/", http.StripPrefix("/static", staticFileServer))
 
-	userService := users.NewService(userModel, sessionStore)
+	userService := users.NewService(userModel, sessionManager)
 	userService.Register(mux)
 
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%d", port),
-		Handler:      mux,
+		Handler:      sessionManager.LoadAndSave(mux),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,

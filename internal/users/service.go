@@ -5,17 +5,17 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/donseba/go-htmx"
-	"github.com/gorilla/sessions"
+	"github.com/alexedwards/scs/v2"
 )
 
 type Service struct {
 	model UserModel
 	htmx  *htmx.HTMX
-    sessionStore *sessions.CookieStore
+    session *scs.SessionManager
 }
 
-func NewService(model UserModel, sessionStore *sessions.CookieStore) Service {
-	return Service{model, htmx.New(), sessionStore}
+func NewService(model UserModel, sessionManager *scs.SessionManager) Service {
+    return Service{model: model, htmx: htmx.New(), session: sessionManager}
 }
 
 func (s Service) Register(mux *http.ServeMux) {
